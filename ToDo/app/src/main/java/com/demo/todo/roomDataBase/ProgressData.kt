@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 data class ProgressData(
     val color : Long,
     @TypeConverters(TypeConverter::class)
-    val todoList:List<ToDoList>,
+    var todoList:MutableList<ToDoList>,
     val totalMinutes:Long,
     val completedMinutes:Long,
     val progressPercentage : Float,// 0 to 1
