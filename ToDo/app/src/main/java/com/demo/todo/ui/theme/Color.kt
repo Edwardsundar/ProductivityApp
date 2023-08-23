@@ -35,3 +35,6 @@ val Teal200 = Color(0xFF03DAC5)
 
 val CalenderBackGround = Color(0xFF645588)
 val ToDoBackGround = Color(0xFF716A83)
+val Easy = Color(0xFF218123)
+val Medium = Color(0xFFFF9800)
+val Important = Color(0xFFF44336)

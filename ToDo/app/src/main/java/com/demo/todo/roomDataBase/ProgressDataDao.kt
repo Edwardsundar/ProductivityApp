@@ -10,9 +10,12 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ProgressDataDao {
     @Query("SELECT * FROM progressData WHERE  `key` = :data ")
-    fun getTodayProgressData(data:String = Resorce.date): Flow<ProgressData>
+    fun getTodayProgressData(data:String = Resorce.getTodayDate()): Flow<ProgressData>
     @Query("SELECT * FROM progressData WHERE  `key` = :date ")
-    fun getOldProgressData(date : String) : ProgressData
+    fun getYesterdayProgressData(date : String = Resorce.getYesterdayDate()) : Flow<ProgressData>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProgressData(progressData: ProgressData)
+    @Query("SELECT EXISTS (SELECT 1 FROM progressData WHERE `key` = :date)")
+    fun getById(date : String) : Boolean
+
 }

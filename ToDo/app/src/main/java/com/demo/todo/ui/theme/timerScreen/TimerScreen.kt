@@ -1,5 +1,6 @@
 package com.demo.todo.ui.theme.timerScreen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,21 +16,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Alignment.Companion.Center
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.Alignment.Companion.TopEnd
-import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layoutId
@@ -38,28 +34,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import com.demo.todo.MyJava.myJava
 import com.demo.todo.R
-import com.demo.todo.resorce.Resorce.Companion.date
+import com.demo.todo.resorce.Resorce
+import com.demo.todo.state.ScreenState
 import com.demo.todo.ui.theme.BlueViolet1
-import com.demo.todo.ui.theme.DeepBlue
-import com.demo.todo.ui.theme.OrangeYellow1
-import com.demo.todo.ui.theme.TextDarkWite
-import com.demo.todo.ui.theme.bottomMenu.BottomMenuItem
-import com.demo.todo.ui.theme.bottomMenu.CreateBottomMenu
+import com.demo.todo.util.ScreenEvents
+
 
 @Composable
-fun TimerScreen(){
-    val date by remember {
-        mutableStateOf(date)
+fun TimerScreen(
+    state: ScreenState,
+    onEvent: (ScreenEvents)->Unit
+){
+    var date by remember {
+        mutableStateOf(Resorce.getTodayDate())
+    }
+    var buttonStateStart by remember {
+        mutableStateOf(false)
     }
 
-    var currentPercentageOfTimer by remember {
-        mutableFloatStateOf(1f)
-    }
-    var timeInMinutes by remember {
-        mutableStateOf("10.10")
-    }
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -74,10 +68,9 @@ fun TimerScreen(){
             contentAlignment = TopEnd
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_options) ,
+                painter = painterResource(id = R.drawable.ic_options),
                 contentDescription = "options",
                 modifier = Modifier.size(50.dp)
-
             )
         }
         Spacer(modifier = Modifier.height(50.dp))
@@ -87,7 +80,10 @@ fun TimerScreen(){
             .background(
                 color = BlueViolet1,
                 shape = RoundedCornerShape(20.dp)
-            ),
+            )
+            .clickable {
+                   date = "\uD83D\uDE01"
+            },
             contentAlignment = Center
             ){
             Text(
@@ -97,48 +93,27 @@ fun TimerScreen(){
                 textAlign = TextAlign.Center
             )
         }
-
-        Spacer(modifier = Modifier.height(200.dp))
+        Spacer(modifier = Modifier.height(185.dp))
         Text(
-            text = timeInMinutes,
+            text = "10:10",
             color = Color.White,
             fontSize = 25.sp
         )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-        ){
-            CircleProgressBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-            /*Image(
+        Spacer(modifier = Modifier.height(30.dp))
+        Image(
                 painter = if (buttonStateStart) {
                     painterResource(id = R.drawable.ic_start)
                 } else {
                     painterResource(id = R.drawable.ic_stop)
                 },
-                contentDescription = null,
-                modifier = Modifier
-                    .layoutId("start_stop_button")
-                    .clickable {
-                        if (!buttonStateStart) {
-                            onEvent(HomeScreenEvent.MainTimerStart, 0)
-                            buttonStateStart = true
-                        } else {
-                            onEvent(HomeScreenEvent.MainTimerStop, 0)
-                            buttonStateStart = false
-                        }
-                    }
-                    .size(40.dp)
-            ) */
-        }
-
-        Image(
-            painter = painterResource(id = R.drawable.ic_stop),
-            contentDescription = null,
-            Modifier.size(40.dp)
+        contentDescription = null,
+        modifier = Modifier
+            .layoutId("start_stop_button")
+            .clickable {
+                buttonStateStart = !buttonStateStart
+                onEvent(if (buttonStateStart) ScreenEvents.TimerStart else ScreenEvents.TimerStop)
+            }
+            .size(40.dp)
         )
 
         Spacer(modifier = Modifier.height(200.dp))
@@ -153,7 +128,6 @@ fun TimerScreen(){
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ){
-
             Image(
                 painter = painterResource(
                     id = R.drawable.ic_restart
@@ -169,4 +143,10 @@ fun TimerScreen(){
             )
         }
     }
+    CircleProgressBar(
+        modifier = Modifier
+            .fillMaxWidth(),
+        state = state,
+        onEvent = onEvent
+    )
 }

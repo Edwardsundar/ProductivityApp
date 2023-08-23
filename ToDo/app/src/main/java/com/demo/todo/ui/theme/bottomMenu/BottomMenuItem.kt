@@ -4,5 +4,6 @@ import androidx.compose.ui.graphics.painter.Painter
 
 data class BottomMenuItem(
     val title:String,
-    val icon:Painter
+    val icon:Painter,
+    val bottomView: BottomView
 )

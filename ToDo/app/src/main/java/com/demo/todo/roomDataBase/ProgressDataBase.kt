@@ -6,13 +6,12 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
+
 @Database(
     entities = [ProgressData::class],
     version = 1
 )
-@TypeConverters(
-    TypeConverter::class
-)
+@TypeConverters(TypeConverter::class)
 abstract class ProgressDataBase:RoomDatabase() {
     abstract fun progressDao() : ProgressDataDao
 

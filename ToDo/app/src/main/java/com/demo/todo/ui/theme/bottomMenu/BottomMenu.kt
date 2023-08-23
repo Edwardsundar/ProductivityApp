@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -39,37 +40,38 @@ import com.demo.todo.ui.theme.ToDoBackGround
 fun CreateBottomMenu(
     bottomMenuItem: List<BottomMenuItem>,
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    bottomView: BottomView
 ){
-    var isSelectedIndex by remember {
-        mutableStateOf(2)
+    var isSelectedMenu by remember {
+        mutableStateOf(bottomView)
     }
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                when(isSelectedIndex){
-                    0-> CalenderBackGround
-                    2-> ToDoBackGround
-                    else -> DeepBlue
+                when(isSelectedMenu){
+                    BottomView.Calender -> CalenderBackGround
+                    BottomView.Home -> DeepBlue
+                    BottomView.ToDo -> ToDoBackGround
                 }
             )
             .padding(15.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Bottom,
     )
     {
-        bottomMenuItem.forEachIndexed { index, item ->
+        bottomMenuItem.forEach {  item ->
             BottomMenu(
                 bottomMenuItem = item,
-                isSelected = isSelectedIndex == index
+                isSelected = isSelectedMenu == item.bottomView
             ) {
-                isSelectedIndex = index
-                when (isSelectedIndex){
-                    0 -> navController.navigate(NavRoot.CalendarViewNav.root)
-                    2 -> navController.navigate(NavRoot.ToDoViewNav.root)
-                    else-> navController.navigate(NavRoot.HomeViewNav.root)
+                isSelectedMenu = item.bottomView
+                when (isSelectedMenu){
+                    BottomView.Calender -> navController.navigate(NavRoot.CalendarViewNav.root)
+                    BottomView.Home -> navController.navigate(NavRoot.HomeViewNav.root)
+                    BottomView.ToDo -> navController.navigate(NavRoot.ToDoViewNav.root)
                 }
             }
         }

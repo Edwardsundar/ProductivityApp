@@ -4,6 +4,7 @@ import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
+
 class TypeConverter {
     @TypeConverter
     fun fromList(list : List<ToDoList>):String{
@@ -16,5 +17,6 @@ class TypeConverter {
         val type = object : TypeToken<List<ToDoList>>(){}.type
         val gson = Gson()
         return gson.fromJson(jsonString , type)
+        //return gson.fromJson(jsonString , ToDoList::class.java)
     }
 }

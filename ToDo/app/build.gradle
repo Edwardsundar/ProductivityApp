@@ -73,12 +73,16 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
-
+    //Room
     implementation "androidx.room:room-ktx:2.5.2"
+    implementation "androidx.room:room-runtime:2.5.2"
     kapt "androidx.room:room-compiler:2.5.2"
+
 
     // geson
     implementation 'com.google.code.gson:gson:2.8.9'
     // Calendar
 
+    // viewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
 }
