@@ -64,15 +64,15 @@ class ProgressViewModel @OptIn(DelicateCoroutinesApi::class) constructor(
                     it.copy(
                         timerCurrentValue = it.timerOverAllValue,
                         timerIsOn = false,
-                        progressPercentage = 0f
+                        progressPercentage = 1f
                     )
                 }
             }
             ScreenEvents.TimerStart -> {
                 _screenState.update {it.copy(
                     timerIsOn = true,
-                    timerCurrentValue = _todayState.value?.completedMinutes ?: 1500,
-                    progressPercentage = _todayState.value?.progressPercentage ?: 0f
+                    timerCurrentValue = _todayState.value?.completedMinutes ?: 0,
+                    progressPercentage = _todayState.value?.progressPercentage ?: 1f
                 )
                 }
                 timerStart()
@@ -84,6 +84,8 @@ class ProgressViewModel @OptIn(DelicateCoroutinesApi::class) constructor(
                 }
                 viewModelScope.launch {
                     var progressData = _todayState.value
+                    if (progressData == null)
+                        this.cancel()
                     progressData = progressData!!.copy(
                         completedMinutes = _screenState.value.timerCurrentValue,
                         progressPercentage = _screenState.value.progressPercentage
@@ -138,7 +140,7 @@ class ProgressViewModel @OptIn(DelicateCoroutinesApi::class) constructor(
                         stringTime = stringTime
                     )
                 }
-                if (difference == 0L || !_screenState.value.timerIsOn) {
+                if (difference == 0L || !screenState.value.timerIsOn) {
                     onEvent(ScreenEvents.TimerStop)
                     this.cancel()
                 }

@@ -53,9 +53,7 @@ fun TimerScreen(
     var buttonStateStart by remember {
         mutableStateOf(false)
     }
-    LaunchedEffect(key1 = buttonStateStart ){
-        onEvent(if (buttonStateStart) ScreenEvents.TimerStart else ScreenEvents.TimerStop)
-    }
+
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -113,6 +111,7 @@ fun TimerScreen(
             .layoutId("start_stop_button")
             .clickable {
                 buttonStateStart = !buttonStateStart
+                onEvent(if (buttonStateStart) ScreenEvents.TimerStart else ScreenEvents.TimerStop)
             }
             .size(40.dp)
         )
