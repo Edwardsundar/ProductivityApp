@@ -50,12 +50,12 @@ fun CreateBottomMenu(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(
-                when(isSelectedMenu){
+            .background( color = Color.Transparent
+                /*when(isSelectedMenu){
                     BottomView.Calender -> CalenderBackGround
                     BottomView.Home -> DeepBlue
                     BottomView.ToDo -> ToDoBackGround
-                }
+                } */
             )
             .padding(15.dp),
         horizontalArrangement = Arrangement.SpaceBetween,

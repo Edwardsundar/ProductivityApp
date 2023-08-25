@@ -10,10 +10,10 @@ import com.demo.todo.ui.theme.Easy
 @Entity(tableName = "progressData")
 data class ProgressData(
     @TypeConverters(TypeConverter::class)
-    val todoList:MutableList<ToDoList> = mutableListOf(),
-    val totalMinutes:Long = 1500,
-    val completedMinutes:Long = 0,
-    val progressPercentage : Float = 0f,// 0 to 1
+    val todoList:MutableList<ToDoList> ,
+    val totalMinutes:Long ,
+    val completedMinutes:Long ,
+    val progressPercentage : Float ,// 1 to 0
     @PrimaryKey
-    val key : String = Resorce.getTodayDate()
+    val key : String
 )

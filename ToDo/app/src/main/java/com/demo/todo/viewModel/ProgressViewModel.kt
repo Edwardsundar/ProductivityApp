@@ -2,10 +2,13 @@ package com.demo.todo.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.demo.todo.resorce.Resorce
 import com.demo.todo.roomDataBase.ProgressData
 import com.demo.todo.state.ScreenState
 import com.demo.todo.util.ScreenEvents
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -14,7 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ProgressViewModel(
+class ProgressViewModel @OptIn(DelicateCoroutinesApi::class) constructor(
     val progressRepository: ProgressRepository
 ):ViewModel() {
 
@@ -29,9 +32,10 @@ class ProgressViewModel(
 
     val screenState = combine(_screenState , _todayState){ screenState , todayState ->
         screenState.copy(
-            timerCurrentValue = todayState?.completedMinutes ?: 1500,
-            timerOverAllValue = todayState?.totalMinutes ?: 1500,
-            todoList = todayState?.todoList ?: mutableListOf()
+            timerOverAllValue =  screenState.timerOverAllValue,
+            timerCurrentValue = screenState.timerCurrentValue,
+            progressPercentage =  screenState.progressPercentage,
+            todoList =  todayState?.todoList ?: screenState.todoList
         )
     }.stateIn(viewModelScope , SharingStarted.WhileSubscribed(5000), ScreenState())
 
@@ -44,7 +48,7 @@ class ProgressViewModel(
                 var progressData : ProgressData? = null
                 viewModelScope.launch {
                     if (_todayState.value == null)
-                        progressRepository.insertProgressData(ProgressData())
+                        progressRepository.insertProgressData(Resorce.getDefaultData())
                     progressData = _todayState.value
                     progressData?.todoList?.add(event.toDoList)
                     progressRepository.insertProgressData(progressData)
@@ -56,19 +60,35 @@ class ProgressViewModel(
                 }
             }
             ScreenEvents.TimerRestart -> {
-
+                _screenState.update {
+                    it.copy(
+                        timerCurrentValue = it.timerOverAllValue,
+                        timerIsOn = false,
+                        progressPercentage = 0f
+                    )
+                }
             }
             ScreenEvents.TimerStart -> {
                 _screenState.update {it.copy(
-                    timerIsOn = true
+                    timerIsOn = true,
+                    timerCurrentValue = _todayState.value?.completedMinutes ?: 1500,
+                    progressPercentage = _todayState.value?.progressPercentage ?: 0f
                 )
                 }
                 timerStart()
             }
             ScreenEvents.TimerStop -> {
                 _screenState.update {it.copy(
-                    timerIsOn = false
+                    timerIsOn = false,
                 )
+                }
+                viewModelScope.launch {
+                    var progressData = _todayState.value
+                    progressData = progressData!!.copy(
+                        completedMinutes = _screenState.value.timerCurrentValue,
+                        progressPercentage = _screenState.value.progressPercentage
+                    )
+                    progressRepository.insertProgressData(progressData)
                 }
             }
 
@@ -103,19 +123,24 @@ class ProgressViewModel(
         }
     }
     private fun timerStart(){
-        if (screenState.value.timerIsOn) return
+        if (!screenState.value.timerIsOn) return
         viewModelScope.launch {
             while (screenState.value.timerIsOn){
-                val progressPercentage = (screenState.value.timerOverAllValue.toFloat()) /
-                        (screenState.value.timerCurrentValue).toFloat()
+                val difference =  (screenState.value.timerOverAllValue - _screenState.value.timerCurrentValue)
+                val progressPercentage = difference /
+                        (screenState.value.timerOverAllValue.toFloat())
                 delay(1000)
-                val difference =  1
-                val stringTime = (difference / 60).toString() +':'+(difference / 60).toString()
+                val stringTime = (difference / 60).toString() +':'+(difference % 60).toString()
                 _screenState.update {
                     it.copy(
                         timerCurrentValue = it.timerCurrentValue + 1,
                         progressPercentage = progressPercentage,
+                        stringTime = stringTime
                     )
+                }
+                if (difference == 0L || !_screenState.value.timerIsOn) {
+                    onEvent(ScreenEvents.TimerStop)
+                    this.cancel()
                 }
             }
         }

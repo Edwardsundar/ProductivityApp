@@ -80,8 +80,15 @@ fun ToDoListView(
         mutableStateOf(false)
     }
     if (showDialog){
-        AddNewToDo(onEvent = onEvent){
-           // onEvent(ScreenEvents.NewToDoList(it))
+        AddNewToDo(onEvent = onEvent){selectedTitle , time , selectedPriority ->
+            if (selectedTitle.length > 1) {
+                val todo = ToDoList(
+                    title = selectedTitle,
+                    priority = selectedPriority,
+                    isCompleted = false
+                )
+                onEvent(ScreenEvents.NewToDoList(todo))
+            }
             showDialog = false
         }
     }

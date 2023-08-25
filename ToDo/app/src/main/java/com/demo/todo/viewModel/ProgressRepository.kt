@@ -27,7 +27,7 @@ class ProgressRepository(
         return dataBase.getTodayProgressData()
     }
     suspend fun createToday(){
-        insertProgressData(ProgressData())
+        insertProgressData(Resorce.getDefaultData())
     }
     suspend fun insertProgressData(progressData: ProgressData?){
         if (progressData != null)

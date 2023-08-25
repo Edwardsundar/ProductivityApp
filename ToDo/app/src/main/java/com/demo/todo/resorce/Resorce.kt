@@ -3,6 +3,7 @@ package com.demo.todo.resorce
 
 import android.icu.text.SimpleDateFormat
 import androidx.compose.ui.graphics.Color
+import com.demo.todo.roomDataBase.ProgressData
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -29,6 +30,13 @@ class Resorce {
             Pair("General" , Color.Green),
             Pair("Medium" , Color.Yellow),
             Pair("Important" , Color.Red)
+        )
+        fun getDefaultData():ProgressData = ProgressData(
+            todoList = mutableListOf(),
+            totalMinutes = 1500,
+            completedMinutes = 0,
+            progressPercentage = 1f,
+            key = getTodayDate()
         )
     }
 }

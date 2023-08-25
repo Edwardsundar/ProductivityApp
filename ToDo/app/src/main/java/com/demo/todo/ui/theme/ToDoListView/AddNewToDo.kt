@@ -45,7 +45,7 @@ import java.util.PriorityQueue
 fun AddNewToDo(
     onEvent: (ScreenEvents)->Unit ,
     modifier :Modifier = Modifier,
-    dialogEvent : ()-> Unit
+    dialogEvent : (String , Int , TaskPriority)-> Unit
 ){
 
     var selectedTitle by remember {
@@ -61,15 +61,7 @@ fun AddNewToDo(
     AlertDialog(
         modifier = modifier,
         onDismissRequest = {
-            if (selectedTitle.length > 1) {
-                 val todo = ToDoList(
-                    title = selectedTitle,
-                    priority = selectedPriority,
-                    isCompleted = false
-                )
-                onEvent(ScreenEvents.NewToDoList(todo))
-            }
-            dialogEvent()
+            dialogEvent(selectedTitle , selectedMinutes , selectedPriority)
         },
         title = { Text(text = "Addd Activity") },
         text = {
@@ -146,7 +138,7 @@ fun AddNewToDo(
             ){
                 Button(
                     onClick = {
-                        dialogEvent()
+                        dialogEvent(selectedTitle , selectedMinutes , selectedPriority)
                     }
                 ) {
                     Text(text = "Saved")

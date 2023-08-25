@@ -53,7 +53,9 @@ fun TimerScreen(
     var buttonStateStart by remember {
         mutableStateOf(false)
     }
-
+    LaunchedEffect(key1 = buttonStateStart ){
+        onEvent(if (buttonStateStart) ScreenEvents.TimerStart else ScreenEvents.TimerStop)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -95,7 +97,7 @@ fun TimerScreen(
         }
         Spacer(modifier = Modifier.height(185.dp))
         Text(
-            text = "10:10",
+            text = state.stringTime,
             color = Color.White,
             fontSize = 25.sp
         )
@@ -111,20 +113,23 @@ fun TimerScreen(
             .layoutId("start_stop_button")
             .clickable {
                 buttonStateStart = !buttonStateStart
-                onEvent(if (buttonStateStart) ScreenEvents.TimerStart else ScreenEvents.TimerStop)
             }
             .size(40.dp)
         )
 
         Spacer(modifier = Modifier.height(200.dp))
 
-        Row(modifier = Modifier
+        Row(
+            modifier = Modifier
             .height(40.dp)
             .width(200.dp)
             .background(
                 color = BlueViolet1,
                 shape = RoundedCornerShape(20.dp)
-            ),
+            )
+            .clickable {
+                       onEvent(ScreenEvents.TimerRestart)
+            },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ){
