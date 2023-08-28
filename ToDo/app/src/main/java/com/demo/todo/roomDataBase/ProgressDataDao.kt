@@ -18,4 +18,7 @@ interface ProgressDataDao {
     @Query("SELECT EXISTS (SELECT 1 FROM progressData WHERE `key` = :date)")
     fun getById(date : String) : Boolean
 
+    @Query("SELECT * FROM progressData")
+    fun getAllData():Flow<List<ProgressData>>
+
 }

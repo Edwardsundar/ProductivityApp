@@ -38,3 +38,25 @@ val ToDoBackGround = Color(0xFF716A83)
 val Easy = Color(0xFF218123)
 val Medium = Color(0xFFFF9800)
 val Important = Color(0xFFF44336)
+
+//
+val BlueWithe = Color(0xFFC1E8FF)
+val LightBron5 = Color(0xFFE5AF6F)
+val LightPink2 = Color(0xFFD979EE)
+
+// kaps
+
+val darkGray = Color(0xFF1a1717)
+val darkBlue = Color(0xFF18192b)
+val white = Color(0xFFF3F3F3)
+val gray = Color(0xFF3F3F3F)
+val orange = Color(0xFFdb660d)
+val blueGray = Color(0xFF404352)
+val nightDark = Color(0xFF403757)
+
+val purple = Color(0xFF9b11ba)
+
+val redOrange = Color(0xFFe84a23)
+val green = Color(0xFF0ddb25)
+val blue = Color(0xFF140ddb)
+val brightBlue = Color(0xFF027cf5)

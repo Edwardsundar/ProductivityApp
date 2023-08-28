@@ -92,7 +92,7 @@ fun ToDoListView(
             showDialog = false
         }
     }
-    val lazyState = rememberLazyListState(10)
+    //val lazyState = rememberLazyListState(10)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -118,8 +118,7 @@ fun ToDoListView(
                         isSelected = true
                         showDialog = true
                         isSelected = false
-                    }
-                    ,
+                    },
                 contentAlignment = Alignment.Center
             ){
                 Row(
@@ -143,13 +142,12 @@ fun ToDoListView(
             }
         }
         LazyColumn(
-            state = lazyState,
+            //state = lazyState,
             modifier = Modifier
-                .fillMaxSize()
                 .padding(bottom = 80.dp)
                 .background(columnColor)
         ){
-            itemsIndexed(
+            /*itemsIndexed(
                 items = state.todoList,
                 key = {_,items->
                     items.hashCode()
@@ -168,7 +166,7 @@ fun ToDoListView(
                 SwipeToDismiss(
                     state = dismissState,
                     background = {
-                     /*   val color = when(dismissState.dismissDirection){
+                        val color = when(dismissState.dismissDirection){
                             DismissDirection.StartToEnd -> Color.Gray
                            // DismissDirection.EndToStart -> Color.Blue
                             else -> Color.Magenta
@@ -184,7 +182,7 @@ fun ToDoListView(
                                 tint = Color.White,
                                 modifier = Modifier.align(Alignment.CenterEnd)
                             )
-                        }*/
+                        }
                     },
                     dismissContent = {
                         SingleListView(
@@ -196,6 +194,16 @@ fun ToDoListView(
                         }
                     }
                 )
+            }*/
+            items(state.todoList.size){index->
+                SingleListView(
+                    toDoList = state.todoList[index],
+                    modifier = Modifier.padding(16.dp),
+
+                    ){isCheck , isDelete->
+                    onEvent(ScreenEvents.CheckBoxChange(index = index ,isCheck = isCheck)
+                    )
+                }
             }
         }
     }

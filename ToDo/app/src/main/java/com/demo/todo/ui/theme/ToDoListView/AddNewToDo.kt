@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
+import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -33,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.demo.todo.R
 import com.demo.todo.resorce.Resorce
 import com.demo.todo.resorce.Resorce.Companion.priority
@@ -58,15 +61,20 @@ fun AddNewToDo(
     var selectedPriority by remember {
         mutableStateOf(TaskPriority.GENERAL)
     }
-    AlertDialog(
-        modifier = modifier,
+    Dialog(
         onDismissRequest = {
             dialogEvent(selectedTitle , selectedMinutes , selectedPriority)
-        },
-        title = { Text(text = "Addd Activity") },
-        text = {
+        }
+    ){
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp),
+            shape = RoundedCornerShape(15.dp)
+        ){
             Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.padding(16.dp)
             ) {
                 TextField(
                     value = selectedTitle,
@@ -81,7 +89,7 @@ fun AddNewToDo(
                     value = selectedMinutes.toString(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     onValueChange = {
-                                    selectedMinutes = it.toInt()
+                        selectedMinutes = it.toInt()
                     },
                     placeholder = {
                         Text(text = "Minutes")
@@ -129,21 +137,19 @@ fun AddNewToDo(
                         }
                     }
                 }
-            }
-        },
-        buttons = {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.CenterEnd
-            ){
-                Button(
-                    onClick = {
-                        dialogEvent(selectedTitle , selectedMinutes , selectedPriority)
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd
+                ){
+                    Button(
+                        onClick = {
+                            dialogEvent(selectedTitle , selectedMinutes , selectedPriority)
+                        }
+                    ) {
+                        Text(text = "Saved")
                     }
-                ) {
-                    Text(text = "Saved")
                 }
             }
         }
-    )
+    }
 }

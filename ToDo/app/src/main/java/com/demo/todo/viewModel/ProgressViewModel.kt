@@ -30,7 +30,12 @@ class ProgressViewModel @OptIn(DelicateCoroutinesApi::class) constructor(
 
     private val _screenState = MutableStateFlow(ScreenState())
 
-    val screenState = combine(_screenState , _todayState){ screenState , todayState ->
+    @OptIn(DelicateCoroutinesApi::class)
+    val allData = progressRepository
+        .getAllData()
+        .stateIn(viewModelScope , SharingStarted.WhileSubscribed() , emptyList())
+
+    val screenState = combine(_screenState , _todayState ){ screenState , todayState ->
         screenState.copy(
             timerOverAllValue =  screenState.timerOverAllValue,
             timerCurrentValue = screenState.timerCurrentValue,
@@ -47,8 +52,14 @@ class ProgressViewModel @OptIn(DelicateCoroutinesApi::class) constructor(
             is ScreenEvents.NewToDoList -> {
                 var progressData : ProgressData? = null
                 viewModelScope.launch {
-                    if (_todayState.value == null)
+                    if (_todayState.value == null) {
+                        _screenState.update {
+                            it.copy(
+                                stringTime = "Edward"
+                            )
+                        }
                         progressRepository.insertProgressData(Resorce.getDefaultData())
+                    }
                     progressData = _todayState.value
                     progressData?.todoList?.add(event.toDoList)
                     progressRepository.insertProgressData(progressData)
@@ -62,10 +73,17 @@ class ProgressViewModel @OptIn(DelicateCoroutinesApi::class) constructor(
             ScreenEvents.TimerRestart -> {
                 _screenState.update {
                     it.copy(
-                        timerCurrentValue = it.timerOverAllValue,
+                        timerCurrentValue = 0,
                         timerIsOn = false,
                         progressPercentage = 1f
                     )
+                }
+                viewModelScope.launch {
+                    val progressData = _todayState.value!!.copy(
+                        progressPercentage = 1f,
+                        completedMinutes = 0
+                    )
+                    progressRepository.insertProgressData(progressData)
                 }
             }
             ScreenEvents.TimerStart -> {
@@ -131,6 +149,16 @@ class ProgressViewModel @OptIn(DelicateCoroutinesApi::class) constructor(
                 val difference =  (screenState.value.timerOverAllValue - _screenState.value.timerCurrentValue)
                 val progressPercentage = difference /
                         (screenState.value.timerOverAllValue.toFloat())
+                if (difference <= 0L || !screenState.value.timerIsOn) {
+                    onEvent(ScreenEvents.TimerStop)
+                    if(difference == 0L)
+                        _screenState.update {
+                            it.copy(
+                                stringTime = "Completed 🏆\uD83C\uDF96️"
+                            )
+                        }
+                    this.cancel()
+                }
                 delay(1000)
                 val stringTime = (difference / 60).toString() +':'+(difference % 60).toString()
                 _screenState.update {
@@ -139,10 +167,6 @@ class ProgressViewModel @OptIn(DelicateCoroutinesApi::class) constructor(
                         progressPercentage = progressPercentage,
                         stringTime = stringTime
                     )
-                }
-                if (difference == 0L || !screenState.value.timerIsOn) {
-                    onEvent(ScreenEvents.TimerStop)
-                    this.cancel()
                 }
             }
         }

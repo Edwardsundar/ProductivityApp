@@ -24,7 +24,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.demo.todo.navcontroller.NavRoot
 import com.demo.todo.roomDataBase.ProgressDataBase
-import com.demo.todo.ui.theme.CalendarView
+import com.demo.todo.calander.CalendarView
+import com.demo.todo.calander.Graph
 import com.demo.todo.ui.theme.DeepBlue
 import com.demo.todo.ui.theme.ToDoListView.ToDoListView
 import com.demo.todo.ui.theme.ToDoTheme
@@ -60,6 +61,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val state by viewModel.screenState.collectAsState()
+                val allData by viewModel.allData.collectAsState()
 
                 val navController = rememberNavController()
                 Box (
@@ -72,7 +74,11 @@ class MainActivity : ComponentActivity() {
                         startDestination = NavRoot.ToDoViewNav.root
                     ) {
                         composable(NavRoot.CalendarViewNav.root) {
-                            CalendarView()
+                            CalendarView(
+                                data = allData,
+                                onEvent = viewModel::onEvent,
+                                navController = navController
+                            )
                         }
                         composable(NavRoot.ToDoViewNav.root) {
                             ToDoListView(
@@ -85,6 +91,9 @@ class MainActivity : ComponentActivity() {
                                 state = state,
                                 onEvent = viewModel::onEvent
                             )
+                        }
+                        composable(NavRoot.GraphViewNav.root){
+                            Graph(data = allData)
                         }
                     }
                     val name = navController.graph.route.toString()
@@ -104,12 +113,12 @@ class MainActivity : ComponentActivity() {
                             BottomMenuItem(
                                 title = "ToDo",
                                 icon = painterResource(id = R.drawable.ic_todo),
-                                bottomView = bottomView
+                                bottomView = BottomView.ToDo
                             )
                         ),
                         modifier = Modifier.align(Alignment.BottomCenter),
                         navController = navController,
-                        bottomView = BottomView.ToDo
+                        bottomView = bottomView
                     )
                 }
             }

@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -40,6 +41,10 @@ import com.demo.todo.resorce.Resorce
 import com.demo.todo.state.ScreenState
 import com.demo.todo.ui.theme.BlueViolet1
 import com.demo.todo.util.ScreenEvents
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -53,7 +58,9 @@ fun TimerScreen(
     var buttonStateStart by remember {
         mutableStateOf(false)
     }
-
+    var lastClick by remember {
+        mutableLongStateOf(0L)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -110,8 +117,15 @@ fun TimerScreen(
         modifier = Modifier
             .layoutId("start_stop_button")
             .clickable {
-                buttonStateStart = !buttonStateStart
-                onEvent(if (buttonStateStart) ScreenEvents.TimerStart else ScreenEvents.TimerStop)
+                val current = System.currentTimeMillis()
+                if (current - lastClick >= 1000L){
+                    buttonStateStart = !buttonStateStart
+                    when (state.timerIsOn) {
+                        true -> onEvent(ScreenEvents.TimerStop)
+                        false -> onEvent(ScreenEvents.TimerStart)
+                    }
+                    lastClick = current
+                }
             }
             .size(40.dp)
         )
@@ -138,7 +152,6 @@ fun TimerScreen(
                 ),
                 contentDescription = null
             )
-
             Text(
                 text = "Restart",
                 fontSize = 20.sp,

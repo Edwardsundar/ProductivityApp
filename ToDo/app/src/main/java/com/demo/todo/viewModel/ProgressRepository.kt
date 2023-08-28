@@ -33,4 +33,5 @@ class ProgressRepository(
         if (progressData != null)
             dataBase.insertProgressData(progressData)
     }
+    fun getAllData() = dataBase.getAllData()
 }
